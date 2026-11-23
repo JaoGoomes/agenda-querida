@@ -185,9 +185,13 @@ function FeedbackForm() {
       </label>
       <fieldset className="aq-rating">
         <legend>Sua avaliação</legend>
-        <div className="aq-stars" onMouseLeave={() => setHoveredRating(0)}>
+        <div className="aq-stars" onPointerLeave={() => setHoveredRating(0)} onFocus={() => setHoveredRating(0)}>
           {[1, 2, 3, 4, 5].map((value) => (
-            <label key={value} onMouseEnter={() => setHoveredRating(value)} className={value <= (hoveredRating || rating) ? "is-filled" : undefined}>
+            <label
+              key={value}
+              onPointerEnter={(event) => setHoveredRating(event.pointerType === "mouse" ? value : 0)}
+              className={value <= (hoveredRating || rating) ? "is-filled" : undefined}
+            >
               <input type="radio" name="avaliacao" value={value} checked={rating === value} onChange={() => setRating(value)} aria-label={value + (value === 1 ? " estrela" : " estrelas")} required />
               <Star size={26} strokeWidth={1.55} aria-hidden="true" />
             </label>

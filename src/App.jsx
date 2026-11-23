@@ -102,8 +102,8 @@ function Hero() {
           <div className="photo-contour" aria-hidden="true"></div>
           <div className="hero-frame"><img className="hero-photo" src="/images/hero.webp" srcSet="/images/hero-small.webp 680w, /images/hero.webp 1120w" sizes="(min-width: 1400px) 550px, (min-width: 760px) 42vw, (min-width: 640px) 580px, calc(100vw - 3rem)" width="1120" height="1019" fetchPriority="high" alt="Profissional sorrindo durante um atendimento por headset em uma mesa de trabalho." /></div>
           <svg className="drawn-heart" viewBox="0 0 82 76" fill="none" aria-hidden="true">
-            <path d="M24 60C13 46 5 30 10 21c6-11 17-4 21 9C35 17 44 3 54 6c14 5 6 23-2 33C42 49 32 56 22 63" />
-            <path d="M36 62c14-5 25-13 31-23" />
+            <path pathLength="1" d="M24 60C13 46 5 30 10 21c6-11 17-4 21 9C35 17 44 3 54 6c14 5 6 23-2 33C42 49 32 56 22 63" />
+            <path pathLength="1" d="M36 62c14-5 25-13 31-23" />
           </svg>
           <div className="photo-note">
             <span className="note-icon"><Heart size={23} strokeWidth={1.5} aria-hidden="true" /></span>
@@ -168,6 +168,30 @@ function Footer() {
 
 export default function App() {
   useEffect(() => {
+    let pressedControl
+    const clearPress = () => {
+      pressedControl?.removeAttribute('data-pressed')
+      pressedControl = null
+    }
+    const handlePointer = (event) => {
+      if (!event.isPrimary || event.pointerType === 'mouse') return
+      clearPress()
+      if (event.type === 'pointerdown' && event.button === 0) {
+        pressedControl = event.target.closest?.('.primary-link, .header-contact, .aq-action')
+        pressedControl?.setAttribute('data-pressed', '')
+      }
+    }
+    const events = ['pointerdown', 'pointerup', 'pointercancel', 'lostpointercapture']
+    events.forEach(type => document.addEventListener(type, handlePointer, true))
+    window.addEventListener('blur', clearPress)
+    return () => {
+      clearPress()
+      events.forEach(type => document.removeEventListener(type, handlePointer, true))
+      window.removeEventListener('blur', clearPress)
+    }
+  }, [])
+
+  useEffect(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || !('IntersectionObserver' in window)) return
     const observer = new IntersectionObserver(entries => {
       entries.forEach(({isIntersecting, target}) => {
@@ -175,9 +199,9 @@ export default function App() {
         target.classList.add('entered')
         observer.unobserve(target)
       })
-    }, { threshold: 0.08 })
-    document.querySelectorAll('main section:not(.hero) h2, .care-card').forEach(el => {
-      if (el.getBoundingClientRect().top > window.innerHeight) observer.observe(el)
+    }, { rootMargin: '0px 0px 12px', threshold: 0 })
+    document.querySelectorAll('main section:not(.hero) h2, .care-card, .aq-service-card').forEach(el => {
+      if (el.getBoundingClientRect().top >= window.innerHeight) observer.observe(el)
     })
     return () => observer.disconnect()
   }, [])

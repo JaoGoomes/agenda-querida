@@ -379,8 +379,17 @@
   cursor: pointer;
 }
 
+.aq-lower .aq-stars svg {
+  fill: transparent;
+  pointer-events: none;
+}
+
 .aq-lower .aq-stars .is-filled svg {
   fill: #b66d6a;
+}
+
+.aq-lower .aq-stars label:has(input:focus-visible) {
+  background-color: #f8eae4;
 }
 
 .aq-lower .aq-stars label:has(input:focus-visible),
@@ -406,7 +415,7 @@
   text-align: center;
   text-decoration: none;
   cursor: pointer;
-  transition: background-color .18s, transform .18s;
+  transition: background-color .18s, transform .18s, scale .14s;
 }
 
 .aq-lower .aq-action:active {
@@ -516,4 +525,28 @@
 @media (prefers-reduced-motion: reduce) {
   .aq-lower .aq-action { transition: none; }
   .aq-lower .aq-action:active { transform: none; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .aq-lower .aq-stars svg { transition: fill 140ms ease-out; }
+  .aq-lower .aq-stars input:checked + svg { animation: aq-star-select 260ms ease-out; }
+  .aq-lower .aq-feedback-status p { animation: aq-feedback-appear 200ms ease-out; }
+  .aq-lower .aq-feedback-status svg path {
+    stroke-dasharray: 32;
+    animation: aq-check-draw 260ms ease-out backwards;
+  }
+  .aq-lower .aq-feedback-status svg path:nth-child(2) { animation-delay: 55ms; }
+}
+
+@keyframes aq-star-select {
+  45% { transform: scale(1.15) rotate(-5deg); }
+}
+
+@keyframes aq-feedback-appear {
+  from { opacity: .65; transform: translateY(3px); }
+}
+
+@keyframes aq-check-draw {
+  from { stroke-dashoffset: 32; }
+  to { stroke-dashoffset: 0; }
 }
